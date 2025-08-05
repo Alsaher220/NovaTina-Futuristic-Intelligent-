@@ -13,21 +13,19 @@
     }
     h2 {
       text-align: center;
-      color: #333;
     }
     #chat {
-      max-width: 700px;
+      max-width: 600px;
       margin: auto;
-      background: #fff;
+      background: white;
       border: 1px solid #ccc;
-      padding: 15px;
+      padding: 10px;
       height: 70vh;
-      overflow-y: auto;
-      border-radius: 8px;
+      overflow-y: scroll;
     }
     .msg { margin: 10px 0; }
-    .user { color: #1a73e8; font-weight: bold; }
-    .bot { color: #0f9d58; font-weight: bold; white-space: pre-wrap; }
+    .user { color: blue; font-weight: bold; }
+    .bot { color: green; font-weight: bold; white-space: pre-wrap; }
     code {
       background: #eee;
       display: block;
@@ -40,13 +38,13 @@
     }
     #inputArea {
       display: flex;
-      max-width: 700px;
-      margin: 15px auto;
+      max-width: 600px;
+      margin: 10px auto;
       gap: 5px;
     }
     #input {
       flex: 1;
-      padding: 12px;
+      padding: 10px;
       font-size: 16px;
     }
     button, select {
@@ -123,7 +121,7 @@
         });
 
         if (!response.ok) {
-          throw new Error("Failed to connect to AI backend.");
+          throw new Error("Failed to connect to AI backend");
         }
 
         const data = await response.json();
@@ -135,8 +133,9 @@
         chat.scrollTop = chat.scrollHeight;
 
         speak(botReply);
-      } catch (err) {
-        chat.innerHTML += `<div class="msg"><span class="bot">Error:</span> ${err.message}</div>`;
+      } catch (error) {
+        chat.innerHTML += `<div class="msg bot">❌ <b>Error:</b> ${error.message}</div>`;
+        chat.scrollTop = chat.scrollHeight;
       }
     }
 
