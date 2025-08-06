@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Make sure this key is set in Render settings
+  apiKey: process.env.OPENAI_API_KEY, // MUST be set on Render
 });
 
 app.get("/", (req, res) => {
@@ -21,7 +21,7 @@ app.post("/api/chat", async (req, res) => {
 
   try {
     const chatResponse = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Use GPT-3.5 for better compatibility
+      model: "gpt-3.5-turbo",
       messages: [
         { role: "system", content: systemPrompt },
         ...messages,
@@ -30,7 +30,7 @@ app.post("/api/chat", async (req, res) => {
 
     res.json(chatResponse);
   } catch (error) {
-    console.error("❌ OpenAI Error:", error);
+    console.error("❌ OpenAI Error:", error.message);
     res.status(500).json({ error: "AI failed to respond" });
   }
 });
