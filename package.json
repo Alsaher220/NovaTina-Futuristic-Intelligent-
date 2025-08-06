@@ -1,11 +1,14 @@
 {
   "name": "novatina-backend",
   "version": "1.0.0",
-  "description": "Backend for NovaTina AI",
+  "description": "Backend for NovaTina AI Assistant",
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js"
   },
+  "keywords": ["NovaTina", "AI", "OpenAI", "Assistant", "Backend"],
+  "author": "YourNameHere",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
