@@ -88,6 +88,7 @@
   </div>
 
   <script>
+    const API_URL = "https://novatina-futuristic-intelligent-016f.onrender.com/api/chat";
     let conversationHistory = [];
 
     async function send(text = null) {
@@ -102,20 +103,15 @@
       chat.scrollTop = chat.scrollHeight;
 
       const persona = document.getElementById('persona').value;
-      let systemPrompt = "";
-
-      if (persona === "Tina") {
-        systemPrompt = "Your name is Tina. You're a brilliant, kind, and clear coding assistant.";
-      } else if (persona === "Ghost") {
-        systemPrompt = "You are Ghost, a mysterious hacker-style coder who speaks in short, sharp lines.";
-      } else if (persona === "Oracle") {
-        systemPrompt = "You are Oracle, a wise AI with deep technical and philosophical knowledge.";
-      } else if (persona === "Teacher") {
-        systemPrompt = "You are a helpful teacher who explains every code slowly and clearly for beginners.";
-      }
+      const systemPrompt = {
+        "Tina": "You are Tina, a kind and brilliant coding assistant.",
+        "Ghost": "You are Ghost, a mysterious hacker-style AI.",
+        "Oracle": "You are Oracle, a wise and deep technical AI.",
+        "Teacher": "You are a patient teacher who explains all code slowly for beginners."
+      }[persona];
 
       try {
-        const response = await fetch("https://novatina-futuristic-intelligent-016f.onrender.com/api/chat", {
+        const response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ systemPrompt, messages: conversationHistory })
@@ -131,7 +127,7 @@
 
         speak(botReply);
       } catch (error) {
-        chat.innerHTML += `<div class="msg"><span class="bot">Error:</span> Failed to connect to AI backend</div>`;
+        chat.innerHTML += `<div class="msg"><span class="bot">❌ Error:</span> Failed to connect to AI backend</div>`;
       }
     }
 
@@ -153,9 +149,7 @@
     }
 
     function downloadChat() {
-      let text = conversationHistory.map(m => {
-        return `${m.role === 'user' ? 'You' : 'NovaTina'}: ${m.content}`;
-      }).join('\n\n');
+      let text = conversationHistory.map(m => `${m.role === 'user' ? 'You' : 'NovaTina'}: ${m.content}`).join('\n\n');
       const blob = new Blob([text], { type: 'text/plain' });
       const link = document.createElement('a');
       link.download = 'chat-history.txt';
