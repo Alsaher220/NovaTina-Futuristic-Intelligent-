@@ -6,156 +6,364 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NovaTina – Your AI Assistant</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
+    * {
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      box-sizing: border-box;
     }
-    h2 {
-      text-align: center;
-    }
-    #chat {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      border: 1px solid #ccc;
-      padding: 10px;
-      height: 70vh;
-      overflow-y: scroll;
-    }
-    .msg { margin: 10px 0; }
-    .user { color: blue; font-weight: bold; }
-    .bot { color: green; font-weight: bold; white-space: pre-wrap; }
-    code {
-      background: #eee;
-      display: block;
-      padding: 10px;
-      margin-top: 5px;
-      white-space: pre-wrap;
-      overflow-x: auto;
-      border-radius: 5px;
-      font-family: monospace;
-    }
-    #inputArea {
-      display: flex;
-      max-width: 600px;
-      margin: 10px auto;
-      gap: 5px;
-    }
-    #input {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button, select {
-      padding: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover, select:hover {
-      background: #ddd;
-    }
-    #mic {
-      background: #eee;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-    }
+
+```
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  color: white;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.controls {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#chat {
+  width: 100%;
+  max-width: 700px;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  height: 500px;
+  overflow-y: auto;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  margin-bottom: 15px;
+}
+
+.msg {
+  margin: 15px 0;
+  padding: 10px;
+  border-radius: 8px;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-msg {
+  background: #e3f2fd;
+  margin-left: 40px;
+}
+
+.bot-msg {
+  background: #f3e5f5;
+  margin-right: 40px;
+}
+
+.user { 
+  color: #1976d2; 
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.bot { 
+  color: #7b1fa2; 
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.error-msg {
+  background: #ffebee;
+  color: #c62828;
+  border-left: 4px solid #c62828;
+}
+
+code {
+  background: #263238;
+  color: #aed581;
+  display: block;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
+
+#inputArea {
+  display: flex;
+  max-width: 700px;
+  width: 100%;
+  gap: 10px;
+}
+
+#input {
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+#input:focus {
+  border-color: #667eea;
+}
+
+button, select {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 25px;
+  background: #667eea;
+  color: white;
+  transition: background 0.3s;
+}
+
+button:hover, select:hover {
+  background: #5568d3;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+select {
+  cursor: pointer;
+}
+
+#mic {
+  background: #ff6b6b;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+#mic:hover {
+  background: #ee5a5a;
+}
+
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #7b1fa2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+```
+
   </style>
 </head>
 <body>
 
   <h2>🤖 NovaTina – Your AI Code Assistant</h2>
 
-  <div style="text-align:center; margin-bottom:10px;">
+  <div class="controls">
     <label for="persona">🧠 Personality: </label>
     <select id="persona">
-      <option value="Tina">Tina</option>
-      <option value="Ghost">Ghost</option>
-      <option value="Oracle">Oracle</option>
-      <option value="Teacher">Teacher</option>
+      <option value="Tina">Tina (Friendly)</option>
+      <option value="Ghost">Ghost (Hacker)</option>
+      <option value="Oracle">Oracle (Wise)</option>
+      <option value="Teacher">Teacher (Patient)</option>
     </select>
     <button onclick="downloadChat()">💾 Save Chat</button>
+    <button onclick="clearChat()">🗑️ Clear</button>
   </div>
 
   <div id="chat"></div>
 
   <div id="inputArea">
-    <input id="input" type="text" placeholder="Ask NovaTina anything...">
-    <button onclick="send()">Send</button>
+    <input id="input" type="text" placeholder="Ask NovaTina anything..." onkeypress="if(event.key==='Enter') send()">
+    <button id="sendBtn" onclick="send()">Send</button>
     <button id="mic">🎤</button>
   </div>
 
   <script>
-    const API_URL = "https://novatina-futuristic-intelligent-016f.onrender.com/api/chat";
+    // IMPORTANT: Replace this URL with your actual Render backend URL
+    const API_URL = "https://your-backend-url.onrender.com/api/chat";
+    
     let conversationHistory = [];
+    let isProcessing = false;
 
     async function send(text = null) {
+      if (isProcessing) return;
+      
       const input = document.getElementById('input');
       const chat = document.getElementById('chat');
+      const sendBtn = document.getElementById('sendBtn');
       const userText = text || input.value.trim();
+      
       if (!userText) return;
 
-      chat.innerHTML += `<div class="msg"><span class="user">You:</span> ${userText}</div>`;
+      // Add user message
+      chat.innerHTML += `<div class="msg user-msg"><span class="user">You:</span>${escapeHtml(userText)}</div>`;
       conversationHistory.push({ role: "user", content: userText });
       input.value = '';
       chat.scrollTop = chat.scrollHeight;
 
+      // Disable input while processing
+      isProcessing = true;
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '<span class="loading"></span>';
+
       const persona = document.getElementById('persona').value;
-      const systemPrompt = {
-        "Tina": "You are Tina, a kind and brilliant coding assistant.",
-        "Ghost": "You are Ghost, a mysterious hacker-style AI.",
-        "Oracle": "You are Oracle, a wise and deep technical AI.",
-        "Teacher": "You are a patient teacher who explains all code slowly for beginners."
-      }[persona];
+      const systemPrompts = {
+        "Tina": "You are Tina, a kind, brilliant, and enthusiastic coding assistant. You help with code, explain concepts clearly, and encourage learning.",
+        "Ghost": "You are Ghost, a mysterious and efficient hacker-style AI. You're direct, technical, and prefer minimal explanations with maximum impact.",
+        "Oracle": "You are Oracle, a wise and philosophical technical AI. You provide deep insights and consider the broader implications of code and technology.",
+        "Teacher": "You are a patient and encouraging teacher who explains programming concepts step-by-step. You use analogies and break down complex topics for beginners."
+      };
 
       try {
+        console.log('Sending request to:', API_URL);
+        
         const response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ systemPrompt, messages: conversationHistory })
+          body: JSON.stringify({ 
+            systemPrompt: systemPrompts[persona], 
+            messages: conversationHistory 
+          })
         });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Server error: ${response.status}`);
+        }
 
         const data = await response.json();
         const botReply = data.choices[0].message.content;
         conversationHistory.push({ role: "assistant", content: botReply });
 
-        const formattedReply = botReply.replace(/```(.*?)```/gs, '<code>$1</code>');
-        chat.innerHTML += `<div class="msg"><span class="bot">${persona}:</span> ${formattedReply}</div>`;
+        // Format code blocks
+        const formattedReply = formatMessage(botReply);
+        chat.innerHTML += `<div class="msg bot-msg"><span class="bot">${persona}:</span>${formattedReply}</div>`;
         chat.scrollTop = chat.scrollHeight;
 
+        // Speak response
         speak(botReply);
+        
       } catch (error) {
-        chat.innerHTML += `<div class="msg"><span class="bot">❌ Error:</span> Failed to connect to AI backend</div>`;
+        console.error('Error:', error);
+        chat.innerHTML += `<div class="msg error-msg"><strong>❌ Error:</strong> ${error.message}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+      } finally {
+        isProcessing = false;
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = 'Send';
       }
     }
 
+    function formatMessage(text) {
+      // Handle code blocks
+      return escapeHtml(text).replace(/```([\s\S]*?)```/g, '<code>$1</code>');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Voice input
     document.getElementById('mic').addEventListener('click', () => {
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Speech recognition not supported in this browser');
+        return;
+      }
+      
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
       recognition.start();
+      
       recognition.onresult = function(event) {
         const speechText = event.results[0][0].transcript;
         document.getElementById('input').value = speechText;
         send(speechText);
       };
+      
+      recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+      };
     });
 
+    // Text-to-speech
     function speak(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      speechSynthesis.speak(utterance);
+      if ('speechSynthesis' in window) {
+        // Remove code blocks from speech
+        const cleanText = text.replace(/```[\s\S]*?```/g, 'code block');
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = "en-US";
+        utterance.rate = 0.9;
+        speechSynthesis.speak(utterance);
+      }
     }
 
     function downloadChat() {
-      let text = conversationHistory.map(m => `${m.role === 'user' ? 'You' : 'NovaTina'}: ${m.content}`).join('\n\n');
+      if (conversationHistory.length === 0) {
+        alert('No chat to save!');
+        return;
+      }
+      
+      let text = conversationHistory.map(m => 
+        `${m.role === 'user' ? 'You' : 'NovaTina'}: ${m.content}`
+      ).join('\n\n' + '='.repeat(50) + '\n\n');
+      
       const blob = new Blob([text], { type: 'text/plain' });
       const link = document.createElement('a');
-      link.download = 'chat-history.txt';
+      link.download = `novatina-chat-${new Date().toISOString().split('T')[0]}.txt`;
       link.href = URL.createObjectURL(blob);
       link.click();
     }
+
+    function clearChat() {
+      if (confirm('Clear entire chat history?')) {
+        conversationHistory = [];
+        document.getElementById('chat').innerHTML = '';
+      }
+    }
+
+    // Welcome message
+    window.addEventListener('load', () => {
+      document.getElementById('chat').innerHTML = `
+        <div class="msg bot-msg">
+          <span class="bot">NovaTina:</span>
+          Hello! I'm NovaTina, your AI coding assistant. Ask me anything about programming, and I'll help you learn and build amazing things! 🚀
+        </div>
+      `;
+    });
   </script>
 </body>
 </html>
